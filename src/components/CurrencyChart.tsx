@@ -2,7 +2,6 @@ import { Box, Select } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -10,21 +9,19 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useStore } from "../hooks/useStore";
 import { getTimeSeries } from "../services/frankfurter";
+import { Currency } from "../utils/types";
 
-const CurrencyChart = () => {
+const CurrencyChart = ({ currency }: { currency: Currency }) => {
   const [rates, setRates] = useState<any>({});
   const [selectedOption, setSelectedOption] = useState<string>("");
-
-  const { toCurrency } = useStore();
 
   useEffect(() => {
     const fetchRates = async (startDate: string) => {
       try {
-        const data = await getTimeSeries("USD", toCurrency, startDate);
+        const data = await getTimeSeries("USD", currency, startDate);
         setRates(data.rates || {});
-        console.log(data)
+        console.log(data);
       } catch (error) {
         console.error("Error fetching rates", error);
       }
@@ -35,8 +32,8 @@ const CurrencyChart = () => {
       let startDate = new Date();
 
       switch (selectedOption) {
-        case "7days":
-          startDate.setDate(endDate.getDate() - 7);
+        case "14days":
+          startDate.setDate(endDate.getDate() - 14);
           break;
         case "3months":
           startDate.setMonth(endDate.getMonth() - 3);
@@ -54,37 +51,67 @@ const CurrencyChart = () => {
     if (selectedOption) {
       calculateDates();
     }
-  }, [selectedOption, toCurrency]);
+  }, [selectedOption, currency]);
 
   const data = Object.keys(rates).map((date) => ({
     date,
-    value: rates[date]?.[toCurrency] || 0,
+    value: rates[date]?.[currency] || 0,
   }));
 
   console.log(data); // Verifica que los datos están correctamente formateados
 
+  const minValue = Math.round(Math.min(...data.map((item) => item.value)));
+  const maxValue = Math.round(Math.max(...data.map((item) => item.value)));
+
   return (
     <Box w="100%" display="flex" flexDirection="column" alignItems="center">
+      <Box>
+        <h2>Historial de la moneda en base a USD: {currency.toString()}</h2>
+      </Box>
       <Box>
         <Select
           maxWidth="300px"
           placeholder="Seleccione una opción"
           onChange={(e) => setSelectedOption(e.target.value)}
         >
-          <option value="7days">7 días</option>
+          <option value="14days">14 días</option>
           <option value="3months">3 meses</option>
           <option value="6months">6 meses</option>
         </Select>
       </Box>
-      <Box w="60%" h="300px">
+      <Box
+        w="60%"
+        h="300px"
+        background="#fafafa"
+        p="10px"
+        rounded="5px"
+        userSelect="none"
+        borderBottom={2}
+        borderBottomColor={"black"}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
+            <CartesianGrid strokeOpacity={0.1} vertical={false} />
+            <XAxis dataKey="date" tickMargin={10} hide={true}/>
+            <YAxis
+              domain={[minValue, maxValue]} 
+              axisLine={false}
+              tick={{ fill: "darkgray" }}
+              tickMargin={10}
+              tickCount={5}
+              padding={{ top: 5, bottom: 5 }} 
+              tickLine={false}
+              tickFormatter={(value) => Number.parseInt(value).toFixed(2).toString()} // Redondear los ticks al entero más cercano
+          
+            />
             <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="value" name={toCurrency.toString()} stroke="#4b7fce" />
+            <Line
+              dot={false}
+              type="monotone"
+              dataKey="value"
+              name={currency.toString()}
+              stroke="#0454cd"
+            />
           </LineChart>
         </ResponsiveContainer>
       </Box>

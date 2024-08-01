@@ -3,11 +3,12 @@ import { useEffect } from "react";
 
 import { useStore } from "../hooks/useStore";
 import { getConversionFromCurrency } from "../services/frankfurter";
+import { Currency } from "../utils/types";
 import CurrencySelector from "./CurrencySelector";
 import FlexWrapper from "./FlexWrapper";
 import { Logo, SwapIcon } from "./Icons";
 
-function CurrencyConverter() {
+function CurrencyConverter({setCurrencyToChart}: {setCurrencyToChart: (currency: Currency) => void}) {
   const {
     setFromCurrency,
     setToCurrency,
@@ -22,6 +23,7 @@ function CurrencyConverter() {
 
   useEffect(() => {
     // si cambia el amount ejecute el getConversion con amount
+    setCurrencyToChart(toCurrency)
     const getConversion = async () => {
       const data = await getConversionFromCurrency(
         fromCurrency,
