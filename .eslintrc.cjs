@@ -1,36 +1,18 @@
 module.exports = {
-  env: {
-    browser: true,
-    es2021: true
-  },
+  root: true,
+  env: { browser: true, es2020: true },
   extends: [
-    'standard-with-typescript',
-    'plugin:react/recommended'
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended',
   ],
-  overrides: [
-    {
-      env: {
-        node: true
-      },
-      files: [
-        '.eslintrc.{js,cjs}'
-      ],
-      excludedFiles: ['vite.config.ts', 'vite-env.d.ts'],
-      parserOptions: {
-        sourceType: 'script',
-        project: './tsconfig.json'
-      }
-    }
-  ],
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module'
-  },
-  plugins: [
-    'react'
-  ],
+  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  parser: '@typescript-eslint/parser',
+  plugins: ['react-refresh'],
   rules: {
-    'react/react-in-jsx-scope': 'off',
-    'import/no-absolute-path': 'off'
-  }
+    'react-refresh/only-export-components': [
+      'warn',
+      { allowConstantExport: true },
+    ],
+  },
 }
