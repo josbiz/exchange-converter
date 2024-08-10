@@ -1,14 +1,13 @@
-import { Box, Button, Flex, Heading, Input } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { Box, Button, Flex, Input } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 
 import { useStore } from "../hooks/useStore";
 import { getConversionFromCurrency } from "../services/frankfurter";
-import { Currency } from "../utils/types";
 import CurrencySelector from "./CurrencySelector";
 import FlexWrapper from "./FlexWrapper";
-import { Logo, SwapIcon } from "./Icons";
+import { SwapIcon } from "./Icons";
 
-function CurrencyConverter({setCurrencyToChart}: {setCurrencyToChart: (currency: Currency) => void}) {
+function CurrencyConverter({ store }: { store: ReturnType<typeof useStore> }) {
   const {
     setFromCurrency,
     setToCurrency,
@@ -19,18 +18,19 @@ function CurrencyConverter({setCurrencyToChart}: {setCurrencyToChart: (currency:
     toCurrency,
     amount,
     result,
-  } = useStore();
+  } = store;
+
+  const [rotated, setRotated] = useState(false);
 
   useEffect(() => {
     // si cambia el amount ejecute el getConversion con amount
-    setCurrencyToChart(toCurrency)
     const getConversion = async () => {
       const data = await getConversionFromCurrency(
         fromCurrency,
         toCurrency,
         amount
       );
-      setResult(data.rates[toCurrency]);
+      setResult(data.rates[toCurrency.toString()].toString());
     };
     getConversion();
   }, [fromCurrency, toCurrency, amount]);
@@ -42,20 +42,6 @@ function CurrencyConverter({setCurrencyToChart}: {setCurrencyToChart: (currency:
       flexDirection="column"
       justifyContent="center"
     >
-      <Flex
-        flexDirection="row"
-        justifyContent="center"
-        alignContent="center"
-        mb={10}
-        p={2}
-      >
-        <Box h="35px" w="35px" mx={2}>
-          <Logo />
-        </Box>
-        <Heading as="h2" size="lg">
-          Exchange Converter
-        </Heading>
-      </Flex>
       <Flex flexDirection="row">
         <FlexWrapper>
           <CurrencySelector
@@ -71,14 +57,23 @@ function CurrencyConverter({setCurrencyToChart}: {setCurrencyToChart: (currency:
                 toCurrency,
                 inputValue
               );
-              setResult(data.rates[toCurrency]);
+              setResult(data.rates.currency.toString());  
             }}
             value={amount}
             m={2}
           />
         </FlexWrapper>
         <FlexWrapper>
-          <Button variant="link" padding={2} onClick={switchCurrencies}>
+          <Button
+            variant="link"
+            padding={2}
+            transform={rotated ? "rotate(180deg)" : "rotate(0deg)"}
+            transition="transform 0.3s ease"
+            onClick={() => {
+              switchCurrencies();
+              setRotated(!rotated);
+            }}
+          >
             <SwapIcon />
           </Button>
         </FlexWrapper>
@@ -96,7 +91,7 @@ function CurrencyConverter({setCurrencyToChart}: {setCurrencyToChart: (currency:
                 fromCurrency,
                 inputValue
               );
-              setAmount(data.rates[fromCurrency]);
+              setAmount(data.rates.currency.toString());
             }}
             value={result}
             m={2}

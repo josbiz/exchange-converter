@@ -10,6 +10,15 @@ export interface State {
   result: string
 }
 
+export interface Conversion {
+  amount: number;
+  base: string;
+  date: string;
+  rates: {
+    [currency: string]: number;
+  }
+}
+
 export type Action =
   | { type: 'SWITCH_CURRENCY' }
   | { type: 'SET_FROM_CURRENCY'; payload: Currency }

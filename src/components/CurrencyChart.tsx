@@ -13,7 +13,7 @@ import { getTimeSeries } from "../services/frankfurter";
 import { Currency } from "../utils/types";
 
 const CurrencyChart = ({ currency }: { currency: Currency }) => {
-  const [rates, setRates] = useState<any>({});
+  const [rates, setRates] = useState<Record<string, Record<Currency, number>>>({});
   const [selectedOption, setSelectedOption] = useState<string>("");
 
   useEffect(() => {
@@ -21,7 +21,6 @@ const CurrencyChart = ({ currency }: { currency: Currency }) => {
       try {
         const data = await getTimeSeries("USD", currency, startDate);
         setRates(data.rates || {});
-        console.log(data);
       } catch (error) {
         console.error("Error fetching rates", error);
       }
@@ -29,7 +28,7 @@ const CurrencyChart = ({ currency }: { currency: Currency }) => {
 
     const calculateDates = () => {
       const endDate = new Date();
-      let startDate = new Date();
+      const startDate = new Date();
 
       switch (selectedOption) {
         case "14days":
@@ -58,10 +57,8 @@ const CurrencyChart = ({ currency }: { currency: Currency }) => {
     value: rates[date]?.[currency] || 0,
   }));
 
-  console.log(data); // Verifica que los datos están correctamente formateados
-
-  const minValue = Math.round(Math.min(...data.map((item) => item.value)));
-  const maxValue = Math.round(Math.max(...data.map((item) => item.value)));
+  const minValue = Math.min(...data.map((item) => item.value)).toFixed(2);
+  const maxValue = Math.max(...data.map((item) => item.value)).toFixed(2);
 
   return (
     <Box w="100%" display="flex" flexDirection="column" alignItems="center">
@@ -102,7 +99,6 @@ const CurrencyChart = ({ currency }: { currency: Currency }) => {
               padding={{ top: 5, bottom: 5 }} 
               tickLine={false}
               tickFormatter={(value) => Number.parseInt(value).toFixed(2).toString()} // Redondear los ticks al entero más cercano
-          
             />
             <Tooltip />
             <Line
