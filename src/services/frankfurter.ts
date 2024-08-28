@@ -1,7 +1,6 @@
 import { API_HOST } from "../utils/constants";
 import { Currency, Conversion } from "../utils/types";
 
-
 export const getAllCurrencies = async () => {
   const response = await fetch(`${API_HOST}/currencies`);
   const data = await response.json();
@@ -18,7 +17,7 @@ export const getConversionFromCurrency = async (
     `${API_HOST}/latest?amount=${amount}&from=${fromCurrency.toString()}&to=${toCurrency.toString()}`
   );
   const data = await response.json();
-  console.log(data); // Verifica que los datos se estén recibiendo correctamente
+ 
   return data;
 };
 
@@ -36,7 +35,6 @@ export const getTimeSeries = async (
     throw new Error("Error fetching rates");
   }
   const data = await response.json();
-  console.log(data); // Verifica que los datos se estén recibiendo correctamente
 
   return data;
 };

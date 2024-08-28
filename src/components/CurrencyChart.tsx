@@ -1,4 +1,4 @@
-import { Box, Select } from "@chakra-ui/react";
+import { Box, Select, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
   CartesianGrid,
@@ -12,14 +12,22 @@ import {
 import { getTimeSeries } from "../services/frankfurter";
 import { Currency } from "../utils/types";
 
-const CurrencyChart = ({ currency }: { currency: Currency }) => {
-  const [rates, setRates] = useState<Record<string, Record<Currency, number>>>({});
-  const [selectedOption, setSelectedOption] = useState<string>("");
+const CurrencyChart = ({
+  fromCurrency,
+  toCurrency,
+}: {
+  toCurrency: Currency;
+  fromCurrency: Currency;
+}) => {
+  const [rates, setRates] = useState<Record<string, Record<Currency, number>>>(
+    {}
+  );
+  const [selectedOption, setSelectedOption] = useState<string>("14days");
 
   useEffect(() => {
     const fetchRates = async (startDate: string) => {
       try {
-        const data = await getTimeSeries("USD", currency, startDate);
+        const data = await getTimeSeries(fromCurrency, toCurrency, startDate);
         setRates(data.rates || {});
       } catch (error) {
         console.error("Error fetching rates", error);
@@ -50,22 +58,29 @@ const CurrencyChart = ({ currency }: { currency: Currency }) => {
     if (selectedOption) {
       calculateDates();
     }
-  }, [selectedOption, currency]);
+  }, [selectedOption, toCurrency, fromCurrency]);
 
   const data = Object.keys(rates).map((date) => ({
     date,
-    value: rates[date]?.[currency] || 0,
+    value: rates[date]?.[toCurrency] || 0,
   }));
 
   const minValue = Math.min(...data.map((item) => item.value)).toFixed(2);
   const maxValue = Math.max(...data.map((item) => item.value)).toFixed(2);
 
   return (
-    <Box w="100%" display="flex" flexDirection="column" alignItems="center">
-      <Box>
-        <h2>Historial de la moneda en base a USD: {currency.toString()}</h2>
+    <Box w="80%" display="flex" flexDirection="column" alignItems="center" id="chart" p="150px">
+      <Box w="100%" display={"flex"} justifyContent={"flex-start"} my={4}>
+        <Text as={"h1"}>
+        <Text fontSize={"15px"} color={"gray.500"} fontWeight={"semibold"}>
+        Currency history from
+        </Text>
+        <Text fontSize={"30px"} color={"gray.700"} fontWeight={"bold"}>
+          {fromCurrency.toString()} to {toCurrency.toString()}
+        </Text>
+      </Text>
       </Box>
-      <Box>
+      <Box w="100%" display={"flex"} justifyContent={"flex-end"} my={4}>
         <Select
           maxWidth="300px"
           placeholder="Seleccione una opción"
@@ -77,7 +92,7 @@ const CurrencyChart = ({ currency }: { currency: Currency }) => {
         </Select>
       </Box>
       <Box
-        w="60%"
+        w="100%"
         h="300px"
         background="#fafafa"
         p="10px"
@@ -89,23 +104,25 @@ const CurrencyChart = ({ currency }: { currency: Currency }) => {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <CartesianGrid strokeOpacity={0.1} vertical={false} />
-            <XAxis dataKey="date" tickMargin={10} hide={true}/>
+            <XAxis dataKey="date" tickMargin={10} hide={true} />
             <YAxis
-              domain={[minValue, maxValue]} 
+              domain={[minValue, maxValue]}
               axisLine={false}
               tick={{ fill: "darkgray" }}
               tickMargin={10}
               tickCount={5}
-              padding={{ top: 5, bottom: 5 }} 
+              padding={{ top: 5, bottom: 5 }}
               tickLine={false}
-              tickFormatter={(value) => Number.parseInt(value).toFixed(2).toString()} // Redondear los ticks al entero más cercano
+              tickFormatter={(value) =>
+                Number.parseInt(value).toFixed(2).toString()
+              } // Redondear los ticks al entero más cercano
             />
             <Tooltip />
             <Line
               dot={false}
               type="monotone"
               dataKey="value"
-              name={currency.toString()}
+              name={toCurrency.toString()}
               stroke="#0454cd"
             />
           </LineChart>

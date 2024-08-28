@@ -1,7 +1,10 @@
 import { useCurrencies } from "../hooks/useCurrencies"
 
 const currencies = useCurrencies()
+
 export type Currency = keyof currencies
+
+export type CurrencyString = currencies[Currency]
 
 export interface State {
   fromCurrency: Currency

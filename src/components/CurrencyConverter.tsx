@@ -1,11 +1,12 @@
-import { Box, Button, Flex, Input } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 import { useStore } from "../hooks/useStore";
 import { getConversionFromCurrency } from "../services/frankfurter";
 import CurrencySelector from "./CurrencySelector";
 import FlexWrapper from "./FlexWrapper";
 import { SwapIcon } from "./Icons";
+import { useCurrenciesString } from "../hooks/useCurrencies";
 
 function CurrencyConverter({ store }: { store: ReturnType<typeof useStore> }) {
   const {
@@ -30,34 +31,40 @@ function CurrencyConverter({ store }: { store: ReturnType<typeof useStore> }) {
         toCurrency,
         amount
       );
-      setResult(data.rates[toCurrency.toString()].toString());
+      setResult(data.rates[toCurrency.toString()].toFixed(2).toString());
     };
     getConversion();
   }, [fromCurrency, toCurrency, amount]);
 
   return (
     <Box
-      h="100vh"
+      h="90vh"
       display="flex"
       flexDirection="column"
       justifyContent="center"
     >
+      <Text as={"h1"}>
+        <Text fontSize={"15px"} color={"gray.500"} fontWeight={"semibold"}>
+          {amount.toString() +
+            " " +
+            useCurrenciesString(fromCurrency.toString()) +
+            " ="}
+        </Text>
+        <Text fontSize={"30px"} color={"gray.700"} fontWeight={"bold"}>
+          {result.toString() + " " + useCurrenciesString(toCurrency.toString())}
+        </Text>
+      </Text>
       <Flex flexDirection="row">
         <FlexWrapper>
           <CurrencySelector
             onChange={setFromCurrency}
             selectorValue={fromCurrency}
+            ignoreValue={toCurrency}
           />
           <Input
             onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
               const inputValue = event.target.value;
               setAmount(inputValue);
-              const data = await getConversionFromCurrency(
-                fromCurrency,
-                toCurrency,
-                inputValue
-              );
-              setResult(data.rates.currency.toString());  
             }}
             value={amount}
             m={2}
@@ -81,17 +88,12 @@ function CurrencyConverter({ store }: { store: ReturnType<typeof useStore> }) {
           <CurrencySelector
             onChange={setToCurrency}
             selectorValue={toCurrency}
+            ignoreValue={fromCurrency}
           />
           <Input
             onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
               const inputValue = event.target.value;
               setResult(inputValue);
-              const data = await getConversionFromCurrency(
-                toCurrency,
-                fromCurrency,
-                inputValue
-              );
-              setAmount(data.rates.currency.toString());
             }}
             value={result}
             m={2}

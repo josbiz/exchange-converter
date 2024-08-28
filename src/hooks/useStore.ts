@@ -4,7 +4,7 @@ import { Action, Currency, type State } from '../utils/types'
 
 const initialState: State = {
   fromCurrency: 'USD',
-  toCurrency: 'MXN',
+  toCurrency: 'EUR',
   amount: '1',
   result: '17'
 }
