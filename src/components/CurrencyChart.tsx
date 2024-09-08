@@ -69,7 +69,7 @@ const CurrencyChart = ({
   const maxValue = Math.max(...data.map((item) => item.value)).toFixed(2);
 
   return (
-    <Box w="80%" display="flex" flexDirection="column" alignItems="center" id="chart" p="150px">
+    <Box w={["90%", "80%", "50%"]} display="flex" flexDirection="column" alignItems="center" id="chart" my={"100px"}>
       <Box w="100%" display={"flex"} justifyContent={"flex-start"} my={4}>
         <Text as={"h1"}>
         <Text fontSize={"15px"} color={"gray.500"} fontWeight={"semibold"}>

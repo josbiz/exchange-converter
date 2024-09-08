@@ -1,6 +1,5 @@
 import {
   Table,
-  TableContainer,
   Tbody,
   Td,
   Th,
@@ -45,7 +44,13 @@ function CurrencyTables({ store }: { store: ReturnType<typeof useStore> }) {
   }, [fromCurrency, toCurrency]);
 
   return (
-    <Box id="common" backgroundColor={"gray.100"} p={10} rounded={5}>
+    <Box
+      w={["100%", "80%", "50%"]}
+      id="common"
+      backgroundColor={"gray.100"}
+      p={10}
+      rounded={5}
+    >
       <Text as={"h1"}>
         <Text fontSize={"15px"} color={"gray.500"} fontWeight={"semibold"}>
           Common conversion rates from
@@ -54,61 +59,56 @@ function CurrencyTables({ store }: { store: ReturnType<typeof useStore> }) {
           {fromCurrency.toString()} to {toCurrency.toString()}
         </Text>
       </Text>
-      <Box
+      <Table
+        size={["sm", "sm", "md"]}
+        variant="striped"
         w={"100%"}
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems={"center"}
-        my={8}
+        backgroundColor={"#fff"}
+        my={"10px"}
       >
-        <TableContainer>
-          <Table size="md" variant="striped" w="550px" backgroundColor={"#fff"}>
-            <Thead>
-              <Tr backgroundColor="#2D3748">
-                <Th textColor="white" textAlign="center" verticalAlign="middle">
-                  <Box textAlign="center">
-                    <Image
-                      src={`https://wise.com/web-art/assets/flags/${String(
-                        fromCurrency.toString().toLowerCase()
-                      )}.svg`}
-                      alt={fromCurrency.toString()}
-                      boxSize="20px"
-                      mb={1}
-                      mx="auto"
-                    />
-                    {fromCurrency.toString()}
-                  </Box>
-                </Th>
-                <Th textColor="white" textAlign="center" verticalAlign="middle">
-                  <Box textAlign="center">
-                    <Image
-                      src={`https://wise.com/web-art/assets/flags/${String(
-                        toCurrency.toString().toLowerCase()
-                      )}.svg`}
-                      alt={toCurrency.toString()}
-                      boxSize="20px"
-                      mb={1}
-                      mx="auto"
-                    />
-                    {toCurrency.toString()}
-                  </Box>
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {cuantities.map((cuantity) => (
-                <Tr key={cuantity}>
-                  <Td textAlign="center">{cuantity}</Td>
-                  <Td textAlign="center" textColor={"#4A5568"}>
-                    {cells[cuantity] ?? "-"}
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </Box>
+        <Thead>
+          <Tr backgroundColor="#2D3748">
+            <Th textColor="white" textAlign="center" verticalAlign="middle">
+              <Box textAlign="center">
+                <Image
+                  src={`https://wise.com/web-art/assets/flags/${String(
+                    fromCurrency.toString().toLowerCase()
+                  )}.svg`}
+                  alt={fromCurrency.toString()}
+                  boxSize="20px"
+                  mb={1}
+                  mx="auto"
+                />
+                {fromCurrency.toString()}
+              </Box>
+            </Th>
+            <Th textColor="white" textAlign="center" verticalAlign="middle">
+              <Box textAlign="center">
+                <Image
+                  src={`https://wise.com/web-art/assets/flags/${String(
+                    toCurrency.toString().toLowerCase()
+                  )}.svg`}
+                  alt={toCurrency.toString()}
+                  boxSize="20px"
+                  mb={1}
+                  mx="auto"
+                />
+                {toCurrency.toString()}
+              </Box>
+            </Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {cuantities.map((cuantity) => (
+            <Tr key={cuantity} >
+              <Td textAlign="center">{cuantity}</Td>
+              <Td textAlign="center" textColor={"#4A5568"}>
+                {cells[cuantity] ?? "-"}
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
     </Box>
   );
 }
