@@ -22,19 +22,30 @@ function CurrencyConverter({ store }: { store: ReturnType<typeof useStore> }) {
   } = store;
 
   const [rotated, setRotated] = useState(false);
+  const [reverseConversion, setReverseConversion] = useState(false);
 
   useEffect(() => {
-    // si cambia el amount ejecute el getConversion con amount
     const getConversion = async () => {
-      const data = await getConversionFromCurrency(
-        fromCurrency,
-        toCurrency,
-        amount
-      );
-      setResult(data.rates[toCurrency.toString()].toFixed(2).toString());
+      if (reverseConversion) {
+        const data = await getConversionFromCurrency(
+          toCurrency,
+          fromCurrency,
+          result
+        );
+        setAmount(data.rates[fromCurrency.toString()].toFixed(2).toString());
+      } else {
+        const data = await getConversionFromCurrency(
+          fromCurrency,
+          toCurrency,
+          amount
+        );
+        setResult(data.rates[toCurrency.toString()].toFixed(2).toString());
+      }
     };
+  
     getConversion();
-  }, [fromCurrency, toCurrency, amount]);
+  }, [fromCurrency, toCurrency, amount, result, reverseConversion]);
+  
 
   return (
     <Box
@@ -62,9 +73,10 @@ function CurrencyConverter({ store }: { store: ReturnType<typeof useStore> }) {
             ignoreValue={toCurrency}
           />
           <Input
-            onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               const inputValue = event.target.value;
               setAmount(inputValue);
+              setReverseConversion(false); // Se hace la conversión normal
             }}
             value={amount}
             m={2}
@@ -91,9 +103,10 @@ function CurrencyConverter({ store }: { store: ReturnType<typeof useStore> }) {
             ignoreValue={fromCurrency}
           />
           <Input
-            onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               const inputValue = event.target.value;
               setResult(inputValue);
+              setReverseConversion(true); // Se hace la conversión inversa
             }}
             value={result}
             m={2}
