@@ -83,7 +83,6 @@ const CurrencyChart = ({
       <Box w="100%" display={"flex"} justifyContent={"flex-end"} my={4}>
         <Select
           maxWidth="300px"
-          placeholder="Seleccione una opción"
           onChange={(e) => setSelectedOption(e.target.value)}
         >
           <option value="14days">14 días</option>
